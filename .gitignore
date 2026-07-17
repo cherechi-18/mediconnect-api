@@ -1,4 +1,12 @@
 .env
-package-lock.json
-package.json
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.log
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+coverage/
 node_modules
