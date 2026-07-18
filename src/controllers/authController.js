@@ -35,6 +35,14 @@ export const loginUser = async (req, res) => {
     } 
 };
 
+export const doctorDashboard = (req,res) => {
+     res.status(200).json({message: "Welcome Doctor!"})
+};
+
+export const adminDashboard = (req,res) => {
+     res.status(200).json({message: "Welcome Admin!"})
+};
+
 export const getMe = (req, res) => {
     res.status(200).json({message: "Access granted.",
         user: req.user,
