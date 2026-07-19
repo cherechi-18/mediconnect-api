@@ -5,7 +5,7 @@ export const registerUser = async (req, res) => {
 
         const user = await registerService(userData);
         const { firstName, lastName, email, role } = user; // Destructure the user object to get the required fields
-        res.status(201).json({message: "Account created successfully",
+        res.status(201).json({message: "Account created successfully.",
             user: {
                 firstName,
                 lastName,
@@ -14,10 +14,7 @@ export const registerUser = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({
-            message: "Server error",
-            error: error.message
-        });
+        res.status(500).json({message: "Server error",error: error.message});
     }
 };
 
@@ -29,9 +26,7 @@ export const loginUser = async (req, res) => {
 
         res.status(200).json({message: "Login successful", ...data});
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        res.status(500).json({message: error.message});
     } 
 };
 

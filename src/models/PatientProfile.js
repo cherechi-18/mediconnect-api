@@ -59,3 +59,5 @@ const patientProfileSchema = new mongoose.Schema(
             timestamps: true,
         }
     );
+
+    export default mongoose.model("PatientProfile", patientProfileSchema)
