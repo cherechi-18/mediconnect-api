@@ -21,4 +21,3 @@ app.use("/api/auth", authRoutes); // Mount the authRoutes at /api/auth
 app.use("/api/patients", patientRoutes)
 
 export default app;
-''
