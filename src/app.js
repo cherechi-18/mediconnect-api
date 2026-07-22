@@ -5,6 +5,7 @@ import morgan from "morgan"; // log incoming http requests
 import authRoutes from "./routes/authRoutes.js";
 import patientRoutes from "./routes/patientRoutes.js"
 import doctorRoutes from "./routes/doctorRoutes.js"
+import appointmentRoutes from "./routes/appointmentRoutes.js";
 const app = express();
 
 //Middleware
@@ -20,4 +21,5 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes); // Mount the authRoutes at /api/auth
 app.use("/api/patients", patientRoutes);
 app.use("/api/doctors", doctorRoutes);
+app.use("/api/appointments", appointmentRoutes);
 export default app;
