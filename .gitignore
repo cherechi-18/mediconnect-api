@@ -10,3 +10,5 @@ Desktop.ini
 .idea/
 coverage/
 node_modules
+.postman/
+postman/globals
