@@ -38,13 +38,20 @@ const doctorProfileSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
-    availability: [
-      {
-        day: String,
-        startTime: String,
-        endTime: String,
+    availability: {
+            days:{
+              type: [String],
+              default:[]
+            },
+        startTime: {
+          type: String,
+          required: true
+        },
+        endTime: {
+          type: String,
+          required: true,
       },
-    ],
+    },
   },
   {
     timestamps: true,
