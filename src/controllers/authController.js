@@ -1,4 +1,4 @@
-import { registerService,loginService } from "../services/authService.js";
+import { registerService,loginService,forgotPasswordService,resetPasswordService} from "../services/authService.js";
 export const registerUser = async (req, res) => {
     try {
         const userData = req.body;
@@ -39,7 +39,28 @@ export const adminDashboard = (req,res) => {
 };
 
 export const getMe = (req, res) => {
-    res.status(200).json({message: "Access granted.",
-        user: req.user,
+    res.status(200).json({message: "Access granted.",user: req.user});
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const result = await forgotPasswordService(email);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
     });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.query;
+    const { password } = req.body;
+    const result = await resetPasswordService(token,password);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({message: error.message});
+  }
 };
