@@ -223,9 +223,4 @@ paths:
         "403":
           description: Access denied.
 
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+components: {}

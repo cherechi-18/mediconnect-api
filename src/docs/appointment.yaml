@@ -1,8 +1,19 @@
 paths:
   /api/appointments:
     post:
-      summary: Book an appointment
-      description: Allows a patient to book an appointment with a doctor.
+      summary: Book Appointment
+      description: |
+        Allows an authenticated patient to book an appointment with a doctor.
+
+        Business Rules:
+        - Patient profile must exist.
+        - Doctor profile must exist.
+        - Appointment cannot be booked in the past.
+        - Doctor must be available on the selected day.
+        - Appointment time must fall within the doctor's working hours.
+        - Double booking is not allowed.
+        - A confirmation email is automatically sent after a successful booking.
+
       tags:
         - Appointment
 
@@ -11,10 +22,12 @@ paths:
 
       requestBody:
         required: true
+
         content:
           application/json:
             schema:
               type: object
+
               required:
                 - doctorId
                 - appointmentDate
@@ -28,19 +41,38 @@ paths:
                 appointmentDate:
                   type: string
                   format: date-time
-                  example: "2026-09-11T10:00:00.000Z"
+                  example: "2026-09-11T11:00:00.000Z"
 
                 reason:
                   type: string
-                  example: Chest pain
+                  example: Chest pain and difficulty breathing.
 
       responses:
         "201":
           description: Appointment booked successfully.
 
+        "400":
+          description: |
+            Booking failed because one of the following occurred:
+              - Appointment is in the past.
+              - Doctor is unavailable.
+              - Appointment time is outside working hours.
+              - Doctor already has another appointment.
+
+        "401":
+          description: Authentication required.
+
+        "404":
+          description: Patient profile or doctor profile not found.
+
+        "500":
+          description: Internal server error.
+
   /api/appointments/my:
     get:
-      summary: View my appointments
+      summary: View My Appointments
+      description: Returns every appointment belonging to the authenticated patient.
+
       tags:
         - Appointment
 
@@ -51,9 +83,17 @@ paths:
         "200":
           description: Appointments retrieved successfully.
 
+        "401":
+          description: Authentication required.
+
+        "404":
+          description: Patient profile not found.
+
   /api/appointments/doctor:
     get:
-      summary: View doctor's appointments
+      summary: View Doctor Appointments
+      description: Returns every appointment assigned to the authenticated doctor.
+
       tags:
         - Appointment
 
@@ -64,10 +104,27 @@ paths:
         "200":
           description: Doctor appointments retrieved successfully.
 
+        "401":
+          description: Authentication required.
+
+        "404":
+          description: Doctor profile not found.
   /api/appointments/{id}/status:
     patch:
-      summary: Update appointment status
-      description: Doctor accepts, rejects or completes an appointment.
+      summary: Update Appointment Status
+      description: |
+        Allows the assigned doctor to update an appointment.
+
+        Business Rules:
+        - Only the assigned doctor can update the appointment.
+        - Status cannot be updated to the current status.
+        - Accepted appointments cannot be modified.
+        - Rejected appointments cannot be modified.
+        - Cancelled appointments cannot be modified.
+        - Completed appointments cannot be modified.
+        - Approval email is automatically sent when status becomes "accepted".
+        - Rejection email is automatically sent when status becomes "rejected".
+
       tags:
         - Appointment
 
@@ -78,11 +135,15 @@ paths:
         - in: path
           name: id
           required: true
+
           schema:
             type: string
 
+          example: "68b2c9ab55a9d45d1b73ab29"
+
       requestBody:
         required: true
+
         content:
           application/json:
             schema:
@@ -94,6 +155,7 @@ paths:
               properties:
                 status:
                   type: string
+
                   enum:
                     - accepted
                     - rejected
@@ -101,11 +163,39 @@ paths:
 
       responses:
         "200":
-          description: Appointment updated successfully.
+          description: Appointment status updated successfully.
+
+        "400":
+          description: |
+            Status update failed because:
+              - Appointment already has this status.
+              - Accepted appointment cannot be modified.
+              - Rejected appointment cannot be modified.
+              - Cancelled appointment cannot be modified.
+              - Completed appointment cannot be modified.
+
+        "401":
+          description: Authentication required.
+
+        "403":
+          description: You are not authorized to update this appointment.
+
+        "404":
+          description: Appointment or doctor profile not found.
 
   /api/appointments/{id}/cancel:
     patch:
-      summary: Cancel appointment
+      summary: Cancel Appointment
+
+      description: |
+        Allows a patient to cancel their appointment.
+
+        Business Rules:
+        - Patient must own the appointment.
+        - Completed appointments cannot be cancelled.
+        - Already cancelled appointments cannot be cancelled again.
+        - Cancellation email is automatically sent.
+
       tags:
         - Appointment
 
@@ -116,6 +206,7 @@ paths:
         - in: path
           name: id
           required: true
+
           schema:
             type: string
 
@@ -123,9 +214,38 @@ paths:
         "200":
           description: Appointment cancelled successfully.
 
+        "400":
+          description: |
+            Cancellation failed because:
+              - Appointment is already cancelled.
+              - Appointment has been completed.
+
+        "401":
+          description: Authentication required.
+
+        "403":
+          description: You are not authorized to cancel this appointment.
+
+        "404":
+          description: Appointment or patient profile not found.
+
   /api/appointments/{id}/reschedule:
     patch:
-      summary: Reschedule appointment
+      summary: Reschedule Appointment
+
+      description: |
+        Allows the patient to reschedule an appointment.
+
+        Business Rules:
+        - Patient must own the appointment.
+        - Cannot reschedule completed appointments.
+        - Cannot reschedule cancelled appointments.
+        - New date cannot be in the past.
+        - Doctor must be available.
+        - Appointment must be within working hours.
+        - Double booking is prevented.
+        - Status automatically returns to "pending".
+
       tags:
         - Appointment
 
@@ -136,11 +256,13 @@ paths:
         - in: path
           name: id
           required: true
+
           schema:
             type: string
 
       requestBody:
         required: true
+
         content:
           application/json:
             schema:
@@ -153,15 +275,35 @@ paths:
                 appointmentDate:
                   type: string
                   format: date-time
-                  example: "2026-09-15T14:00:00.000Z"
+                  example: "2026-09-20T14:00:00.000Z"
 
       responses:
         "200":
           description: Appointment rescheduled successfully.
 
+        "400":
+          description: |
+            Rescheduling failed because:
+              - Appointment is completed.
+              - Appointment is cancelled.
+              - Date is in the past.
+              - Doctor is unavailable.
+              - Appointment is outside working hours.
+              - Doctor is already booked.
+
+        "401":
+          description: Authentication required.
+
+        "403":
+          description: You are not authorized to reschedule this appointment.
+
+        "404":
+          description: Appointment or patient profile not found.
   /api/appointments/status/{status}:
     get:
       summary: Filter appointments by status
+      description: Returns appointments filtered by their status for the authenticated patient or doctor.
+
       tags:
         - Appointment
 
@@ -172,16 +314,31 @@ paths:
         - in: path
           name: status
           required: true
+
           schema:
             type: string
+            enum:
+              - pending
+              - accepted
+              - rejected
+              - cancelled
+              - completed
 
       responses:
         "200":
-          description: Filtered appointments returned successfully.
+          description: Filtered appointments retrieved successfully.
+
+        "401":
+          description: Authentication required.
+
+        "404":
+          description: Patient or doctor profile not found.
 
   /api/appointments/date/{date}:
     get:
       summary: Filter appointments by date
+      description: Returns appointments for a specific appointment date.
+
       tags:
         - Appointment
 
@@ -192,17 +349,28 @@ paths:
         - in: path
           name: date
           required: true
+
           schema:
             type: string
-            format: date
+            format: date-time
+
+          example: "2026-09-11T11:00:00.000Z"
 
       responses:
         "200":
-          description: Filtered appointments returned successfully.
+          description: Filtered appointments retrieved successfully.
+
+        "401":
+          description: Authentication required.
+
+        "404":
+          description: Patient or doctor profile not found.
 
   /api/appointments/doctor/{doctorId}:
     get:
       summary: Filter appointments by doctor
+      description: Returns every appointment belonging to the specified doctor.
+
       tags:
         - Appointment
 
@@ -213,16 +381,22 @@ paths:
         - in: path
           name: doctorId
           required: true
+
           schema:
             type: string
 
       responses:
         "200":
-          description: Doctor appointments returned successfully.
+          description: Doctor appointments retrieved successfully.
+
+        "404":
+          description: Doctor not found.
 
   /api/appointments/patient/{patientId}:
     get:
       summary: Filter appointments by patient
+      description: Returns every appointment belonging to the specified patient.
+
       tags:
         - Appointment
 
@@ -233,11 +407,15 @@ paths:
         - in: path
           name: patientId
           required: true
+
           schema:
             type: string
 
       responses:
         "200":
-          description: Patient appointments returned successfully.
+          description: Patient appointments retrieved successfully.
+
+        "404":
+          description: Patient not found.
 
 components: {}

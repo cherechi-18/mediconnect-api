@@ -14,12 +14,18 @@ const appointmentDoc = YAML.load(path.join(__dirname, "appointment.yaml"));
 const options = {
   definition: {
     openapi: "3.0.0",
+
     info: {
       title: "MediConnect API",
       version: "1.0.0",
       description: "REST API documentation for the MediConnect Healthcare Backend",
     },
+
     servers: [{url: "http://localhost:5000"}],
+
+    // Global JWT Authentication
+    security: [
+      {bearerAuth: []}],
 
     paths: {
       ...authDoc.paths,
@@ -29,6 +35,14 @@ const options = {
     },
 
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+
       ...authDoc.components,
       ...patientDoc.components,
       ...doctorDoc.components,
