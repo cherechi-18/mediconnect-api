@@ -1,4 +1,6 @@
 import express from "express";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./docs/swagger.js";
 import cors from "cors"; // connects frontend to backend
 import helmet from "helmet"; //add common http security headers
 import morgan from "morgan"; // log incoming http requests
@@ -14,10 +16,11 @@ app.use(cors());
 app.use(helmet());
 app.use(morgan("common"));
 
+//Swagger Documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Health check route
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "MediConnnect API is running" });
-});
+app.get("/", (req, res) => {res.status(200).json({ message: "MediConnnect API is running" })});
 app.use("/api/auth", authRoutes); // Mount the authRoutes at /api/auth
 app.use("/api/patients", patientRoutes);
 app.use("/api/doctors", doctorRoutes);

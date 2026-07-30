@@ -1,0 +1,243 @@
+paths:
+  /api/appointments:
+    post:
+      summary: Book an appointment
+      description: Allows a patient to book an appointment with a doctor.
+      tags:
+        - Appointment
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - doctorId
+                - appointmentDate
+                - reason
+
+              properties:
+                doctorId:
+                  type: string
+                  example: "68a6038298eebcb9055ea1ac9"
+
+                appointmentDate:
+                  type: string
+                  format: date-time
+                  example: "2026-09-11T10:00:00.000Z"
+
+                reason:
+                  type: string
+                  example: Chest pain
+
+      responses:
+        "201":
+          description: Appointment booked successfully.
+
+  /api/appointments/my:
+    get:
+      summary: View my appointments
+      tags:
+        - Appointment
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        "200":
+          description: Appointments retrieved successfully.
+
+  /api/appointments/doctor:
+    get:
+      summary: View doctor's appointments
+      tags:
+        - Appointment
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        "200":
+          description: Doctor appointments retrieved successfully.
+
+  /api/appointments/{id}/status:
+    patch:
+      summary: Update appointment status
+      description: Doctor accepts, rejects or completes an appointment.
+      tags:
+        - Appointment
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
+              required:
+                - status
+
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - accepted
+                    - rejected
+                    - completed
+
+      responses:
+        "200":
+          description: Appointment updated successfully.
+
+  /api/appointments/{id}/cancel:
+    patch:
+      summary: Cancel appointment
+      tags:
+        - Appointment
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: Appointment cancelled successfully.
+
+  /api/appointments/{id}/reschedule:
+    patch:
+      summary: Reschedule appointment
+      tags:
+        - Appointment
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
+              required:
+                - appointmentDate
+
+              properties:
+                appointmentDate:
+                  type: string
+                  format: date-time
+                  example: "2026-09-15T14:00:00.000Z"
+
+      responses:
+        "200":
+          description: Appointment rescheduled successfully.
+
+  /api/appointments/status/{status}:
+    get:
+      summary: Filter appointments by status
+      tags:
+        - Appointment
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - in: path
+          name: status
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: Filtered appointments returned successfully.
+
+  /api/appointments/date/{date}:
+    get:
+      summary: Filter appointments by date
+      tags:
+        - Appointment
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - in: path
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+
+      responses:
+        "200":
+          description: Filtered appointments returned successfully.
+
+  /api/appointments/doctor/{doctorId}:
+    get:
+      summary: Filter appointments by doctor
+      tags:
+        - Appointment
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - in: path
+          name: doctorId
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: Doctor appointments returned successfully.
+
+  /api/appointments/patient/{patientId}:
+    get:
+      summary: Filter appointments by patient
+      tags:
+        - Appointment
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - in: path
+          name: patientId
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: Patient appointments returned successfully.
+
+components: {}

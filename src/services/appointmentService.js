@@ -215,7 +215,7 @@ export const cancelAppointmentService = async (userId, appointmentId) => {
 
   if (!appointment) {throw new Error("Appointment not found.")}
 
-  if (appointment.patient.toString() !== patient._id.toString()) {
+  if (appointment.patient._id.toString() !== patient._id.toString()) {
     throw new Error("You are not authorized to cancel this appointment.")
   }
   
@@ -226,8 +226,8 @@ export const cancelAppointmentService = async (userId, appointmentId) => {
   appointment.status = "cancelled";
 
   await appointment.save();
-  
-const cancellationEmail = appointmentRejectedEmail(
+
+const cancellationEmail = appointmentCancellationEmail(
     appointment.patient.user.firstName,
     appointment.doctor.user.firstName,
     appointment.appointmentDate
@@ -241,6 +241,7 @@ const cancellationEmail = appointmentRejectedEmail(
 
   return appointment;
 };
+
 export const rescheduleAppointmentService = async (
   userId,
   appointmentId,

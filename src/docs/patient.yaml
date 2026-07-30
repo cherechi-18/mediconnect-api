@@ -1,0 +1,109 @@
+paths:
+  /api/patient/profile:
+    post:
+      summary: Create patient profile
+      description: Creates a patient profile for the authenticated patient.
+      tags:
+        - Patient
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - dateOfBirth
+                - gender
+                - bloodGroup
+
+              properties:
+                dateOfBirth:
+                  type: string
+                  format: date
+                  example: "2004-08-10"
+
+                gender:
+                  type: string
+                  example: Female
+
+                bloodGroup:
+                  type: string
+                  example: O+
+
+                genotype:
+                  type: string
+                  example: AA
+
+                phone:
+                  type: string
+                  example: "08012345678"
+
+                address:
+                  type: string
+                  example: Lagos, Nigeria
+
+      responses:
+        "201":
+          description: Patient profile created successfully.
+
+        "400":
+          description: Invalid request.
+
+        "401":
+          description: Unauthorized.
+
+    get:
+      summary: Get patient profile
+      description: Retrieves the authenticated patient's profile.
+      tags:
+        - Patient
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        "200":
+          description: Patient profile retrieved successfully.
+
+        "401":
+          description: Unauthorized.
+
+        "404":
+          description: Patient profile not found.
+
+    patch:
+      summary: Update patient profile
+      description: Updates the authenticated patient's profile.
+      tags:
+        - Patient
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
+      responses:
+        "200":
+          description: Patient profile updated successfully.
+
+        "401":
+          description: Unauthorized.
+
+        "404":
+          description: Patient profile not found.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
