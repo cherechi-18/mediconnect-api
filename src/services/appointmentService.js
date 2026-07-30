@@ -5,7 +5,7 @@ import {sendEmail} from "./emailService.js";
 import {appointmentConfirmationEmail} from "../emails/appointmentConfirmationEmail.js";
 import {appointmentApprovedEmail} from "../emails/appointmentApprovedEmail.js";
 import {appointmentRejectedEmail} from "../emails/appointmentRejectedEmail.js";
-
+import {appointmentCancellationEmail} from "../emails/appointmentCancellationEmail.js";
 export const bookAppointmentService = async (
   userId,
   doctorId,
@@ -163,7 +163,7 @@ if (appointment.status === "completed") {
   await appointment.save();
 
   if (status === "accepted") {
-  const email = appointmentApprovedEmail(
+  const approvedEmail = appointmentApprovedEmail(
     appointment.patient.user.firstName,
     appointment.doctor.user.firstName,
     appointment.appointmentDate
@@ -171,12 +171,12 @@ if (appointment.status === "completed") {
 
   await sendEmail(
     appointment.patient.user.email,
-    email.subject,
-    email.html
+    approvedEmail.subject,
+    approvedEmail.html
   );
 }
 if (status === "rejected") {
-  const email = appointmentRejectedEmail(
+  const rejectedEmail = appointmentRejectedEmail(
     appointment.patient.user.firstName,
     appointment.doctor.user.firstName,
     appointment.appointmentDate
@@ -184,8 +184,8 @@ if (status === "rejected") {
 
   await sendEmail(
     appointment.patient.user.email,
-    email.subject,
-    email.html
+    rejectedEmail.subject,
+    rejectedEmail.html
   );
 }
 
@@ -198,7 +198,20 @@ export const cancelAppointmentService = async (userId, appointmentId) => {
 
   if (!patient) {throw new Error("Patient profile not found.")}
 
-  const appointment = await Appointment.findById(appointmentId);
+  const appointment = await Appointment.findById(appointmentId).populate({
+    path:"patient",
+    populate: {
+      path:"user",
+      select:"-password"
+    },
+  })
+  .populate({
+    path:"doctor",
+    populate: {
+      path:"user",
+      select:"-password"
+    },
+  })
 
   if (!appointment) {throw new Error("Appointment not found.")}
 
@@ -213,6 +226,18 @@ export const cancelAppointmentService = async (userId, appointmentId) => {
   appointment.status = "cancelled";
 
   await appointment.save();
+  
+const cancellationEmail = appointmentRejectedEmail(
+    appointment.patient.user.firstName,
+    appointment.doctor.user.firstName,
+    appointment.appointmentDate
+  );
+
+  await sendEmail(
+    appointment.patient.user.email,
+    cancellationEmail.subject,
+    cancellationEmail.html
+  );
 
   return appointment;
 };
