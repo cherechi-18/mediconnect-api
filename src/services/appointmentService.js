@@ -1,7 +1,11 @@
 import Appointment from "../models/Appointment.js";
 import PatientProfile from "../models/PatientProfile.js";
 import DoctorProfile from "../models/DoctorProfile.js";
-
+import {sendEmail} from "./emailService.js";
+import {appointmentConfirmationEmail} from "../emails/appointmentConfirmationEmail.js";
+import {appointmentApprovedEmail} from "../emails/appointmentApprovedEmail.js";
+import {appointmentRejectedEmail} from "../emails/appointmentRejectedEmail.js";
+import {appointmentCancellationEmail} from "../emails/appointmentCancellationEmail.js";
 export const bookAppointmentService = async (
   userId,
   doctorId,
@@ -9,14 +13,14 @@ export const bookAppointmentService = async (
   reason
 ) => {
   // Find the logged-in patient's profile
-  const patient = await PatientProfile.findOne({user: userId});
+  const patient = await PatientProfile.findOne({user: userId}).populate("user");
 
   if (!patient) {
     throw new Error("Patient profile not found.");
   }
 
   // Find the doctor's profile
-  const doctor = await DoctorProfile.findById(doctorId);
+  const doctor = await DoctorProfile.findById(doctorId).populate("user");
 
   if (!doctor) {
     throw new Error("Doctor profile not found.");
@@ -35,13 +39,13 @@ if (existingAppointment) {
   throw new Error("The doctor already has an appointment at the selected date and time.");
 }
 //Extract day and time
-const appointment = new Date(appointmentDate);
+const appointmentDateObject = new Date(appointmentDate);
 
-const dayOfWeek = appointment.toLocaleDateString("en-US", {
+const dayOfWeek = appointmentDateObject.toLocaleDateString("en-US", {
   weekday: "long",
 });
 
-const appointmentTime = appointment.toTimeString().slice(0, 5); 
+const appointmentTime = appointmentDateObject.toTimeString().slice(0, 5); 
 
 // Check if the doctor works on the selected day
 if (!doctor.availability.days.includes(dayOfWeek)) {throw new Error("The doctor is not available on this day.")}
@@ -57,6 +61,17 @@ if (appointmentTime < doctor.availability.startTime ||appointmentTime > doctor.a
     appointmentDate,
     reason,
   });
+  const email = appointmentConfirmationEmail(
+    patient.user.firstName,
+    doctor.user.firstName,
+    appointmentRecord.appointmentDate
+);
+
+await sendEmail(
+    patient.user.email,
+    email.subject,
+    email.html
+);
   return appointmentRecord;
 };
 
@@ -96,19 +111,83 @@ export const updateAppointmentStatusService = async (
   }
 
   // Find the appointment
-  const appointment = await Appointment.findById(appointmentId);
+  const appointment = await Appointment.findById(appointmentId).populate({
+    path:"patient",
+    populate: {
+      path:"user",
+      select:"-password"
+    },
+  })
+  .populate({
+    path:"doctor",
+    populate: {
+      path:"user",
+      select:"-password"
+    },
+  })
+
 
   if (!appointment) {throw new Error("Appointment not found.")}
 
   // Ensure the appointment belongs to this doctor
-  if (appointment.doctor.toString() !== doctor._id.toString()) {
+  if (appointment.doctor._id.toString() !== doctor._id.toString()) {
     throw new Error("You are not authorized to update this appointment.");
   }
+  if  (appointment.status === status) {
+    throw new Error (`Appointment is already ${status}.`);
+  }
+
+  // Prevent changing an already accepted appointment
+if (appointment.status === "accepted") {
+  throw new Error("Accepted appointments cannot be changed.");
+}
+
+// Prevent changing an already rejected appointment
+if (appointment.status === "rejected") {
+  throw new Error("Rejected appointments cannot be changed.");
+}
+
+// Prevent changing a cancelled appointment
+if (appointment.status === "cancelled") {
+  throw new Error("Cancelled appointments cannot be updated.");
+}
+
+// Prevent changing a completed appointment
+if (appointment.status === "completed") {
+  throw new Error("Completed appointments cannot be updated.");
+}
 
   // Update the status
   appointment.status = status;
 
   await appointment.save();
+
+  if (status === "accepted") {
+  const approvedEmail = appointmentApprovedEmail(
+    appointment.patient.user.firstName,
+    appointment.doctor.user.firstName,
+    appointment.appointmentDate
+  );
+
+  await sendEmail(
+    appointment.patient.user.email,
+    approvedEmail.subject,
+    approvedEmail.html
+  );
+}
+if (status === "rejected") {
+  const rejectedEmail = appointmentRejectedEmail(
+    appointment.patient.user.firstName,
+    appointment.doctor.user.firstName,
+    appointment.appointmentDate
+  );
+
+  await sendEmail(
+    appointment.patient.user.email,
+    rejectedEmail.subject,
+    rejectedEmail.html
+  );
+}
 
   return appointment;
 };
@@ -119,14 +198,27 @@ export const cancelAppointmentService = async (userId, appointmentId) => {
 
   if (!patient) {throw new Error("Patient profile not found.")}
 
-  const appointment = await Appointment.findById(appointmentId);
+  const appointment = await Appointment.findById(appointmentId).populate({
+    path:"patient",
+    populate: {
+      path:"user",
+      select:"-password"
+    },
+  })
+  .populate({
+    path:"doctor",
+    populate: {
+      path:"user",
+      select:"-password"
+    },
+  })
 
   if (!appointment) {throw new Error("Appointment not found.")}
 
-  if (appointment.patient.toString() !== patient._id.toString()) {
+  if (appointment.patient._id.toString() !== patient._id.toString()) {
     throw new Error("You are not authorized to cancel this appointment.")
   }
-
+  
   if (appointment.status === "cancelled") {throw new Error("Appointment has already been cancelled.")}
 
   if (appointment.status === "completed") {throw new Error("Completed appointments cannot be cancelled.")}
@@ -135,8 +227,21 @@ export const cancelAppointmentService = async (userId, appointmentId) => {
 
   await appointment.save();
 
+const cancellationEmail = appointmentCancellationEmail(
+    appointment.patient.user.firstName,
+    appointment.doctor.user.firstName,
+    appointment.appointmentDate
+  );
+
+  await sendEmail(
+    appointment.patient.user.email,
+    cancellationEmail.subject,
+    cancellationEmail.html
+  );
+
   return appointment;
 };
+
 export const rescheduleAppointmentService = async (
   userId,
   appointmentId,

@@ -1,0 +1,125 @@
+paths:
+  /api/doctor/profile:
+    post:
+      summary: Create doctor profile
+      description: Creates a doctor profile for the authenticated doctor.
+      tags:
+        - Doctor
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - specialization
+                - licenseNumber
+                - practiceStartDate
+                - consultationFee
+
+              properties:
+                specialization:
+                  type: string
+                  example: Cardiology
+
+                licenseNumber:
+                  type: string
+                  example: MDCN123456
+
+                practiceStartDate:
+                  type: string
+                  format: date
+                  example: "2018-06-01"
+
+                consultationFee:
+                  type: number
+                  example: 5000
+
+                hospital:
+                  type: string
+                  example: Lagos University Teaching Hospital
+
+                bio:
+                  type: string
+                  example: Experienced consultant cardiologist.
+
+                availability:
+                  type: object
+                  properties:
+                    days:
+                      type: array
+                      items:
+                        type: string
+                      example:
+                        - Monday
+                        - Wednesday
+                        - Friday
+
+                    startTime:
+                      type: string
+                      example: "09:00"
+
+                    endTime:
+                      type: string
+                      example: "17:00"
+
+      responses:
+        "201":
+          description: Doctor profile created successfully.
+
+        "400":
+          description: Invalid request.
+
+        "401":
+          description: Unauthorized.
+
+    get:
+      summary: View doctor profile
+      description: Retrieves the authenticated doctor's profile.
+      tags:
+        - Doctor
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        "200":
+          description: Doctor profile retrieved successfully.
+
+        "401":
+          description: Unauthorized.
+
+        "404":
+          description: Doctor profile not found.
+
+    patch:
+      summary: Update doctor profile
+      description: Updates the authenticated doctor's profile.
+      tags:
+        - Doctor
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
+      responses:
+        "200":
+          description: Doctor profile updated successfully.
+
+        "401":
+          description: Unauthorized.
+
+        "404":
+          description: Doctor profile not found.
+
+components: {}

@@ -1,0 +1,226 @@
+paths:
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      description: Creates a new patient, doctor or admin account.
+      tags:
+        - Authentication
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - firstName
+                - lastName
+                - email
+                - password
+                - role
+
+              properties:
+                firstName:
+                  type: string
+                  example: John
+
+                lastName:
+                  type: string
+                  example: Doe
+
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@gmail.com
+
+                password:
+                  type: string
+                  format: password
+                  example: Password123
+
+                role:
+                  type: string
+                  enum:
+                    - patient
+                    - doctor
+                    - admin
+                  example: patient
+
+      responses:
+        "201":
+          description: User registered successfully.
+
+        "400":
+          description: Invalid request.
+
+        "500":
+          description: Server error.
+
+  /api/auth/login:
+    post:
+      summary: Login user
+      description: Authenticates a user and returns a JWT token.
+      tags:
+        - Authentication
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
+              required:
+                - email
+                - password
+
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@gmail.com
+
+                password:
+                  type: string
+                  format: password
+                  example: Password123
+
+      responses:
+        "200":
+          description: Login successful.
+
+        "401":
+          description: Invalid email or password.
+
+        "500":
+          description: Server error.
+
+  /api/auth/forgot-password:
+    post:
+      summary: Forgot password
+      description: Sends a password reset email.
+      tags:
+        - Authentication
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
+              required:
+                - email
+
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@gmail.com
+
+      responses:
+        "200":
+          description: Password reset email sent successfully.
+
+        "404":
+          description: User not found.
+
+        "500":
+          description: Server error.
+
+  /api/auth/reset-password:
+    patch:
+      summary: Reset password
+      description: Resets password using a valid reset token.
+      tags:
+        - Authentication
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
+              required:
+                - token
+                - password
+
+              properties:
+                token:
+                  type: string
+                  example: abcd123456789
+
+                password:
+                  type: string
+                  format: password
+                  example: NewPassword123
+
+      responses:
+        "200":
+          description: Password reset successfully.
+
+        "400":
+          description: Invalid or expired reset token.
+
+        "500":
+          description: Server error.
+
+  /api/auth/me:
+    get:
+      summary: Get current user
+      description: Returns the currently authenticated user's information.
+      tags:
+        - Users
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        "200":
+          description: User retrieved successfully.
+
+        "401":
+          description: Unauthorized.
+
+  /api/auth/doctor-dashboard:
+    get:
+      summary: Doctor dashboard
+      description: Accessible only to authenticated doctors.
+      tags:
+        - Dashboard
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        "200":
+          description: Welcome Doctor!
+
+        "401":
+          description: Unauthorized.
+
+        "403":
+          description: Access denied.
+
+  /api/auth/admin-dashboard:
+    get:
+      summary: Admin dashboard
+      description: Accessible only to authenticated administrators.
+      tags:
+        - Dashboard
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        "200":
+          description: Welcome Admin!
+
+        "401":
+          description: Unauthorized.
+
+        "403":
+          description: Access denied.
+
+components: {}
