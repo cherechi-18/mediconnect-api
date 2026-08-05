@@ -95,7 +95,7 @@ API Documentation
 
 Once the server is running, Swagger documentation is available at:
 
-http://localhost:5000/api-docs
+https://mediconnect-api-ist7.onrender.com/api-docs/
 
 Repository
 
@@ -103,7 +103,8 @@ https://github.com/cherechi-18/mediconnect-api
 
 Deployment
 
-The API is successfully deployed on Render at  https://mediconnect-api-ist7.onrender.com
+The API is successfully deployed on Render 
+Live API at:  https://mediconnect-api-ist7.onrender.com
 
 Author
 
