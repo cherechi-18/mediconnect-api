@@ -103,7 +103,7 @@ https://github.com/cherechi-18/mediconnect-api
 
 Deployment
 
-The API is intended for deployment on Render.
+The API is successfully deployed on Render at  https://mediconnect-api-ist7.onrender.com
 
 Author
 

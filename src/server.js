@@ -9,7 +9,7 @@ const startServer = async () => {
   try {
     await connectDB();
     app.listen(PORT, () => {
-      console.log(`Server is running on port http://localhost:${PORT}`);
+      console.log(`MediConnect API is running on port ${PORT}`);
     });
   } catch (error) {
     console.error("Failed to start the server:", error.message);
