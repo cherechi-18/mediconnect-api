@@ -32,7 +32,7 @@ Tech Stack
 - Mongoose
 - JWT Authentication
 - Bcrypt
-- Nodemailer/External Email RESTApi
+- External Email RESTApi (Promailer)
 - Swagger UI
 - Helmet
 - Morgan
