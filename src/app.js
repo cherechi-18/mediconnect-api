@@ -24,7 +24,9 @@ app.use(apiLimiter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Health check route
-app.get("/", (req, res) => {res.status(200).json({ message: "MediConnnect API is running" })});
+app.get("/", (req, res) => {if (req.query.promailer_verify) 
+{return res.send(req.query.promailer_verify)}
+res.status(200).json({message: "MediConnect API is running"})});
 app.use("/api/auth", authRoutes); // Mount the authRoutes at /api/auth
 app.use("/api/patients", patientRoutes);
 app.use("/api/doctors", doctorRoutes);
