@@ -21,7 +21,7 @@ const options = {
       description: "REST API documentation for the MediConnect Healthcare Backend",
     },
 
-    servers: [{url: "http://localhost:5000"}],
+    servers: [{url: "https://mediconnect-api-ist7.onrender.com",},],
 
     // Global JWT Authentication
     security: [
