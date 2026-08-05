@@ -1,28 +1,31 @@
-import dotenv from "dotenv";  dotenv.config();
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  family: 4,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-});
-
-transporter.verify()
-  .then(() => console.log("[email] SMTP connection verified"))
-  .catch((err) => console.error("[email] SMTP verification failed:", err.message));
-
-export default transporter;
+import dotenv from "dotenv"; dotenv.config();
+import axios from "axios";
 
 export const sendEmail = async (to, subject, html) => {
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to,
-    subject,
-    html,
-  });
+  try {
+    const response = await axios.post(
+      "https://mailserver.automationlounge.com/api/v1/messages/send",
+      {
+        to,
+        subject,
+        html,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.API_MAIL_KEY}`,
+          "Content-Type": "application/json",
+        },
+        timeout: 60000,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Email sending failed:",
+      error.response?.data || error.message
+    );
+
+    throw error;
+  }
 };
