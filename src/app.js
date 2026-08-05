@@ -11,6 +11,8 @@ import doctorRoutes from "./routes/doctorRoutes.js"
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 const app = express();
 
+app.set("trust proxy", 1); //Trust the first proxy in front of this application.
+
 //Middleware
 app.use(express.json());
 app.use(cors());
