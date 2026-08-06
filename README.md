@@ -16,7 +16,7 @@ Features
 - Double-booking prevention
 - Password reset via email
 - Email notifications for:
-  - Welcome
+  - Welcome Users
   - Appointment confirmation
   - Appointment approval
   - Appointment rejection
@@ -80,6 +80,8 @@ MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
 EMAIL_USER=your_email_address
 EMAIL_PASS=your_email_password
+SERVER_URL=your_server_url(localhosturl)
+API_MAIL_KEY=your_api_key
 
 *Running the Project
 
@@ -93,7 +95,7 @@ npm start
 
 API Documentation
 
-Once the server is running, Swagger documentation is available at:
+The server is running, Swagger documentation is available at:
 
 https://mediconnect-api-ist7.onrender.com/api-docs/
 
