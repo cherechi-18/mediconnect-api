@@ -73,14 +73,9 @@ user.passwordResetToken = resetToken;
 user.passwordResetExpires = Date.now() + 15 * 60 * 1000;
 await user.save();
 
-const resetLink = `http://localhost:5000/api/auth/reset-password?token=${resetToken}`;
-
-  const resetPasswordEmail = passwordResetEmail(
-    user.firstName,
-    resetLink
-    );
-  
-    await sendEmail(
+const resetUrl = `${process.env.SERVER_URL}/api/auth/reset-password?token=${resetToken}`;
+  const resetPasswordEmail = passwordResetEmail(user.firstName,resetUrl);
+  await sendEmail(
       user.email,
       resetPasswordEmail.subject,
       resetPasswordEmail.html
@@ -94,16 +89,12 @@ const resetLink = `http://localhost:5000/api/auth/reset-password?token=${resetTo
              passwordResetExpires: { $gt: Date.now() }
             });
 
-  if (!user) {
-    throw new Error("Invalid or expired reset token.");
-  }
+  if (!user) {throw new Error("Invalid or expired reset token.")}
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   user.password = hashedPassword;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
-
   await user.save();
-
   return {message: "Password reset successfully."};
 };
