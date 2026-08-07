@@ -34,11 +34,17 @@ export const getPatientProfileService = async (userId) => {
 };
 
 export const updatePatientProfileService = async (userId, updates) => {
+  const allowedUpdates = {
+    phoneNumber: updates.phoneNumber,
+    address: updates.address,
+    allergies: updates.allergies,
+    medicalHistory: updates.medicalHistory,
+    emergencyContact: updates.emergencyContact,
+    profilePicture: updates.profilePicture,
+  };
   const updatedPatient = await PatientProfile.findOneAndUpdate(
-    {
-      user: userId,
-    },
-    updates,
+    { user: userId },
+    allowedUpdates,
     {
       new: true,
       runValidators: true,

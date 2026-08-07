@@ -6,6 +6,6 @@ import { createPatientProfile,getPatientProfile,updatePatientProfile } from "../
 const router = express.Router();
 router.post("/profile",authenticate,authorize("patient"),createPatientProfile);
 router.get("/profile",authenticate,authorize("patient"),getPatientProfile);
-router.put("/profile",authenticate,authorize("patient"),updatePatientProfile);
+router.patch("/profile",authenticate,authorize("patient"),updatePatientProfile);
 
 export default router;

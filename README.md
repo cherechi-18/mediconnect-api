@@ -114,4 +114,4 @@ CHERECHI EMMANUEL DIMOBIKA
 
 Email: cherechidimobika@gmail.com
 
-LinkedIn: Cherechi Dimobika
+LinkedIn: https://www.linkedin.com/in/cherechi-dimobika-16220a388

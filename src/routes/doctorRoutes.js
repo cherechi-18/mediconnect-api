@@ -7,5 +7,5 @@ const router = express.Router();
 
 router.post("/profile",authenticate,authorize("doctor"),createDoctorProfile);
 router.get("/profile",authenticate,authorize("doctor"),getDoctorProfile);
-router.put("/profile",authenticate,authorize("doctor"),updateDoctorProfile);
+router.patch("/profile",authenticate,authorize("doctor"),updateDoctorProfile);
 export default router;

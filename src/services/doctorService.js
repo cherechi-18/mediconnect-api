@@ -39,10 +39,18 @@ export const getDoctorProfileService = async (userId) => {
   return {doctor,yearsOfExperience};
 };
 
-export const updateDoctorProfileService = async (userId,updates) => {
+export const updateDoctorProfileService = async (userId, updates) => {
+  const allowedUpdates = {
+    specialization: updates.specialization,
+    practiceStartDate: updates.practiceStartDate,
+    consultationFee: updates.consultationFee,
+    hospital: updates.hospital,
+    bio: updates.bio,
+    availability: updates.availability,
+  };
   const updatedDoctor = await DoctorProfile.findOneAndUpdate(
-    {user: userId},
-    updates,
+    { user: userId },
+    allowedUpdates,
     {
       new: true,
       runValidators: true,

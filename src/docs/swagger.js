@@ -22,11 +22,7 @@ const options = {
     },
 
     servers: [{url: process.env.SERVER_URL}],
-
-    // Global JWT Authentication
-    security: [
-      {bearerAuth: []}],
-
+    
     paths: {
       ...authDoc.paths,
       ...patientDoc.paths,

@@ -50,36 +50,7 @@ export const getPatientProfile = async (req, res) => {
 
 export const updatePatientProfile = async (req, res) => {
   try {
-    const {
-      gender,
-      dateOfBirth,
-      phoneNumber,
-      address,
-      allergies,
-      medicalHistory,
-      bloodGroup,
-      genotype,
-      emergencyContact,
-      profilePicture,
-    } = req.body;
-
-    const updates = {
-      gender,
-      dateOfBirth,
-      phoneNumber,
-      address,
-      allergies,
-      medicalHistory,
-      bloodGroup,
-      genotype,
-      emergencyContact,
-      profilePicture,
-    };
-
-    const updatedPatient = await updatePatientProfileService(
-      req.user.id,
-      updates
-    );
+    const updatedPatient = await updatePatientProfileService(req.user.id,req.body);
 
     if (!updatedPatient) {
       return res.status(404).json({message: "Patient profile not found."});

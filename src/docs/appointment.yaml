@@ -66,7 +66,7 @@ paths:
           description: Patient profile or doctor profile not found.
 
         "500":
-          description: Internal server error.
+          description: Failed to book appointment.
 
   /api/appointments/my:
     get:
@@ -89,6 +89,9 @@ paths:
         "404":
           description: Patient profile not found.
 
+        "500":
+          description: Failed to retrieve patient's appointment.
+
   /api/appointments/doctor:
     get:
       summary: View Doctor Appointments
@@ -109,6 +112,10 @@ paths:
 
         "404":
           description: Doctor profile not found.
+
+      "500":
+          description: Failed to retrieve doctor's appointment.
+
   /api/appointments/{id}/status:
     patch:
       summary: Update Appointment Status
@@ -183,6 +190,9 @@ paths:
         "404":
           description: Appointment or doctor profile not found.
 
+        "500":
+          description: Failed to update appointment. 
+
   /api/appointments/{id}/cancel:
     patch:
       summary: Cancel Appointment
@@ -228,6 +238,9 @@ paths:
 
         "404":
           description: Appointment or patient profile not found.
+
+        "500":
+          description: Failed to cancel patient's appointment.
 
   /api/appointments/{id}/reschedule:
     patch:
@@ -299,6 +312,10 @@ paths:
 
         "404":
           description: Appointment or patient profile not found.
+
+        "500":
+          description: Failed to reschedule appointment.
+
   /api/appointments/status/{status}:
     get:
       summary: Filter appointments by status
@@ -334,6 +351,9 @@ paths:
         "404":
           description: Patient or doctor profile not found.
 
+        "500":
+          description: Failed to retrieve appointment's status.
+
   /api/appointments/date/{date}:
     get:
       summary: Filter appointments by date
@@ -366,6 +386,9 @@ paths:
         "404":
           description: Patient or doctor profile not found.
 
+        "500":
+          description: Failed to retrieve appointment by date.
+
   /api/appointments/doctor/{doctorId}:
     get:
       summary: Filter appointments by doctor
@@ -392,6 +415,9 @@ paths:
         "404":
           description: Doctor not found.
 
+        "500":
+          description: Failed to retrieve doctor's appointments.
+
   /api/appointments/patient/{patientId}:
     get:
       summary: Filter appointments by patient
@@ -417,5 +443,6 @@ paths:
 
         "404":
           description: Patient not found.
-
-components: {}
+        
+        "500":
+          description: Failed to retrieve patient's appointments.

@@ -17,7 +17,6 @@ paths:
                 - lastName
                 - email
                 - password
-                - role
 
               properties:
                 firstName:
@@ -54,7 +53,7 @@ paths:
           description: Invalid request.
 
         "500":
-          description: Server error.
+          description: Failed to register user.
 
   /api/auth/login:
     post:
@@ -93,7 +92,7 @@ paths:
           description: Invalid email or password.
 
         "500":
-          description: Server error.
+          description: Failed to login.
 
   /api/auth/forgot-password:
     post:
@@ -126,7 +125,7 @@ paths:
           description: User not found.
 
         "500":
-          description: Server error.
+          description: Failed to send password reset email.
 
   /api/auth/reset-password:
     patch:
@@ -134,6 +133,14 @@ paths:
       description: Resets password using a valid reset token.
       tags:
         - Authentication
+
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+          example: abcd123456789
 
       requestBody:
         required: true
@@ -143,14 +150,9 @@ paths:
               type: object
 
               required:
-                - token
                 - password
 
               properties:
-                token:
-                  type: string
-                  example: abcd123456789
-
                 password:
                   type: string
                   format: password
@@ -164,7 +166,7 @@ paths:
           description: Invalid or expired reset token.
 
         "500":
-          description: Server error.
+          description: Failed to reset password.
 
   /api/auth/me:
     get:
@@ -203,6 +205,9 @@ paths:
         "403":
           description: Access denied.
 
+        "500":
+          description: Failed to retrieve doctor's dashboard.
+
   /api/auth/admin-dashboard:
     get:
       summary: Admin dashboard
@@ -223,4 +228,5 @@ paths:
         "403":
           description: Access denied.
 
-components: {}
+      "500":
+          description: Failed to retrieve admin's dashboard.
